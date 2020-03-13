@@ -43,7 +43,7 @@ def update(dt):
         rotation = 0.0
 
 if __name__ == "__main__":
-    file_abspath = os.path.join(os.getcwd(), "objects/biplane.obj")
+    file_abspath = os.path.join(os.getcwd(), "data/biplane.obj")
     print("FILE : ", file_abspath)
 
     # # Iterate vertex data collected in each material
