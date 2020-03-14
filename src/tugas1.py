@@ -10,7 +10,7 @@ WINDOW_HELP_WIDTH = 800
 WINDOW_HELP_HEIGHT = 600
 window_main = pyglet.window.Window(resizable=True)
 window_help = pyglet.window.Window(WINDOW_HELP_WIDTH, WINDOW_HELP_HEIGHT,
-                                  caption='Biplane model Help', visible=False)
+                                  caption='Biplane model Help', visible=True)
 lightfv = ctypes.c_float * 4
 rotation = 0
 meshes = ""
@@ -26,9 +26,13 @@ keys = {
     'right': False,
     'down': False,
     'left': False,
+    'home':False,
+    'i':False,
+    'o':False,
 }
 
 rotation_x, rotation_y, rotation_z = 0, 0, 0
+radius = -20
 translation_x, translation_y, translation_z = 0, 0, 0
 
 @window_main.event
@@ -66,6 +70,10 @@ def on_key_press(symbol, modifiers):
         keys['down'] = True
     if symbol == key.LEFT:  # translate left camera
         keys['left'] = True
+    if symbol == key.I:
+        keys['i'] = True
+    if symbol == key.O:
+        keys['o'] = True
 
 @window_main.event
 def on_key_release(symbol, modifiers):
@@ -81,6 +89,10 @@ def on_key_release(symbol, modifiers):
         keys['z'] = False
     if symbol == key.H:  # display help window
         keys['h'] = False
+    if symbol == key.I:
+        keys['i'] = False
+    if symbol == key.O:
+        keys['o'] = False
     if symbol == key.R:  # reset model position
         keys['r'] = False
     if symbol == key.UP:  # translate up camera
@@ -100,7 +112,9 @@ def on_draw():
     # glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1.0, 1.0, 0.0))
     # glEnable(GL_LIGHT0)
 
-    glTranslated(translation_x, translation_y, translation_z - 80.00)
+    gluLookAt(0,0,radius,0,0,0,0,1,0)
+
+    glTranslated(translation_x, translation_y, translation_z)
     glRotatef(rotation_x, 1.0, 0.0, 0.0)
     glRotatef(rotation_y, 0.0, 1.0, 0.0)
     glRotatef(rotation_z, 0.0, 0.0, 1.0)
@@ -112,6 +126,7 @@ def on_draw():
 def update(dt):
     global rotation_x, rotation_y, rotation_z
     global translation_x, translation_y, translation_z
+    global radius
 
     if keys['x']:
         rotation_x += 90.0 * dt
@@ -144,6 +159,30 @@ def update(dt):
     if keys['h']:
         if not window_help.visible:
             window_help.set_visible()
+
+    if keys['i']:
+        radius += 1
+
+    if keys['o']:
+        radius -= 1
+
+    # if Input.is_key_down(Key.key_left): # Key left = Rotate camera to the left in a circle
+    #     #operate on the angle, get new position
+    #     current_camera_rotation -= camera_rotation_speed
+    #     new_camera_x = radius * math.sin(current_camera_rotation)
+    #     new_camera_z = radius * math.cos(current_camera_rotation)
+
+    #     #set modified position
+    #     LSEngine.camera.set_position((new_camera_x, 5, new_camera_z))
+
+    # if Input.is_key_down(Key.key_right): # Key left = Rotate camera to the right in a circle
+    #     #operate on the angle, get new position
+    #     current_camera_rotation += camera_rotation_speed
+    #     new_camera_x = radius * math.sin(current_camera_rotation)
+    #     new_camera_z = radius * math.cos(current_camera_rotation)
+
+    #     #set modified position
+    #     LSEngine.camera.set_position((new_camera_x, 5, new_camera_z))
 
     if keys['r']:
         print("reset button is pressed")
