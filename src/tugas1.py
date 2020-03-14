@@ -187,6 +187,7 @@ def update(dt):
     if keys['r']:
         print("reset button is pressed")
         rotation_x, rotation_y, rotation_z = 0, 0, 0
+        radius = -20
 
     # if not keys['x']:
     #     rotation_x = 0
