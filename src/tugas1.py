@@ -14,6 +14,9 @@ WINDOW_HELP_HEIGHT = 600
 window_main = pyglet.window.Window(resizable=True)
 window_help = pyglet.window.Window(WINDOW_HELP_WIDTH, WINDOW_HELP_HEIGHT,
                                   caption='Biplane model Help', visible=True)
+lighting_model = False
+texture_model = False
+
 lightfv = ctypes.c_float * 4
 rotation = 0
 meshes = ""
@@ -32,6 +35,7 @@ keys = {
     'home':False,
     'i':False,
     'o':False,
+    's': False,
 }
 
 rotation_x, rotation_y, rotation_z = 0, 0, 0
@@ -77,8 +81,10 @@ def on_key_press(symbol, modifiers):
         keys['i'] = True 
     if symbol == key.O:  # zoom-out the model
         keys['o'] = True
-    if symbol == key.SHIFT:  # alternate key
+    if symbol == key.LSHIFT or symbol == key.RSHIFT:  # alternate key
         keys['shift'] = True
+    if symbol == key.S:  # Enable shade
+        keys['s'] = True
 
 @window_main.event
 def on_key_release(symbol, modifiers):
@@ -104,8 +110,10 @@ def on_key_release(symbol, modifiers):
         keys['down'] = False
     if symbol == key.LEFT:  # translate left camera
         keys['left'] = False
-    if symbol == key.SHIFT:  # alternate key
-        keys['shift'] = True
+    if symbol == key.LSHIFT or symbol == key.RSHIFT:  # alternate key
+        keys['shift'] = False
+    if symbol == key.S:  # Enable shade
+        keys['s'] = False
 
 @window_main.event
 def on_draw():
@@ -124,12 +132,13 @@ def on_draw():
 
     # glEnable(GL_LIGHTING)
 
-    visualization.draw(meshes)
+    visualization.draw(meshes, lighting_enabled=lighting_model, textures_enabled=texture_model)
 
 def update(dt):
     global rotation_x, rotation_y, rotation_z
     global current_camera_rotation, radius, camera_x, camera_z
     global translation_x, translation_y, translation_z
+    global texture_model, lighting_model
 
     if keys['x']: # Key x = rotate on x axis
         rotation_x += 90.0 * dt
@@ -169,21 +178,21 @@ def update(dt):
     if keys['down']: #translate model on -y
         translation_y += 10.0 * dt
 
-    if keys['right'] & keys['shift']: #translate model on x 
+    if keys['right'] and keys['shift']: #translate model on x
         translation_x -= 10.0 * dt
 
-    if keys['left'] & keys['shift']: #translate model on -x 
+    if keys['left'] and keys['shift']: #translate model on -x
         translation_x += 10.0 * dt
         
 
-    if keys['left']: # Key left = Rotate camera to the left in a circle
+    if keys['left'] and not keys['shift']: # Key left = Rotate camera to the left in a circle
         #operate on the angle, get new position
         current_camera_rotation -= 2 * dt
         camera_x = radius * math.sin(current_camera_rotation)
         camera_z = radius * math.cos(current_camera_rotation)
 
 
-    if keys['right']: # Key right = Rotate camera to the right in a circle
+    if keys['right'] and not keys['shift']: # Key right = Rotate camera to the right in a circle
         #operate on the angle, get new position
         current_camera_rotation += 2 * dt
         camera_x = radius * math.sin(current_camera_rotation)
@@ -195,6 +204,16 @@ def update(dt):
         rotation_x, rotation_y, rotation_z = 0, 0, 0
         radius = -20
         camera_x, camera_y, camera_z = 0, 0, -20
+        lighting_model, texture_model = False, False
+
+    if keys['s'] and not keys['shift']:
+        print("shading on button is pressed")
+        lighting_model, texture_model = True, True
+
+    if keys['s'] and keys['shift']:
+        print("shading off button is pressed")
+        lighting_model, texture_model = False, False
+
 
     # if not keys['x']:
     #     rotation_x = 0
@@ -205,10 +224,10 @@ def update(dt):
     # if not keys['z']:
     #     rotation_z = 0
 
-    print(current_camera_rotation, camera_x, camera_z)
+    # print(current_camera_rotation, camera_x, camera_z)
 
 if __name__ == "__main__":
-    file_abspath = os.path.join(os.getcwd(), "data/biplane_1.obj")
+    file_abspath = os.path.join(os.getcwd(), "data/biplane_shade.obj")
     print("FILE : ", file_abspath)
 
     help = Help(WINDOW_HELP_WIDTH, WINDOW_HELP_HEIGHT)
