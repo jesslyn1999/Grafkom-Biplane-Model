@@ -16,17 +16,20 @@ rotation = 0
 meshes = ""
 
 keys = {
-    'left':False,
-    'right':False,
     'x': False,
     'y':False,
     'z':False,
     'ctrl':False,
     'h':False,
-    'home':False,
+    'r': False,
+    'up': False,
+    'right': False,
+    'down': False,
+    'left': False,
 }
 
 rotation_x, rotation_y, rotation_z = 0, 0, 0
+translation_x, translation_y, translation_z = 0, 0, 0
 
 @window_main.event
 def on_resize(width, height):
@@ -51,8 +54,18 @@ def on_key_press(symbol, modifiers):
         keys['y'] = True
     if symbol == key.Z:
         keys['z'] = True
-    if symbol == key.H:
+    if symbol == key.H:  # display help window
         keys['h'] = True
+    if symbol == key.R:  # reset model position
+        keys['r'] = True
+    if symbol == key.UP:  # translate up camera
+        keys['up'] = True
+    if symbol == key.RIGHT:  # translate right camera
+        keys['right'] = True
+    if symbol == key.DOWN:  # translate down camera
+        keys['down'] = True
+    if symbol == key.LEFT:  # translate left camera
+        keys['left'] = True
 
 @window_main.event
 def on_key_release(symbol, modifiers):
@@ -66,8 +79,18 @@ def on_key_release(symbol, modifiers):
         keys['y'] = False
     if symbol == key.Z:
         keys['z'] = False
-    if symbol == key.H:
+    if symbol == key.H:  # display help window
         keys['h'] = False
+    if symbol == key.R:  # reset model position
+        keys['r'] = False
+    if symbol == key.UP:  # translate up camera
+        keys['up'] = False
+    if symbol == key.RIGHT:  # translate right camera
+        keys['right'] = False
+    if symbol == key.DOWN:  # translate down camera
+        keys['down'] = False
+    if symbol == key.LEFT:  # translate left camera
+        keys['left'] = False
 
 @window_main.event
 def on_draw():
@@ -77,7 +100,7 @@ def on_draw():
     # glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1.0, 1.0, 0.0))
     # glEnable(GL_LIGHT0)
 
-    glTranslated(0.0, 0.0, -20.0)
+    glTranslated(translation_x, translation_y, translation_z - 80.00)
     glRotatef(rotation_x, 1.0, 0.0, 0.0)
     glRotatef(rotation_y, 0.0, 1.0, 0.0)
     glRotatef(rotation_z, 0.0, 0.0, 1.0)
@@ -88,6 +111,7 @@ def on_draw():
 
 def update(dt):
     global rotation_x, rotation_y, rotation_z
+    global translation_x, translation_y, translation_z
 
     if keys['x']:
         rotation_x += 90.0 * dt
@@ -107,9 +131,23 @@ def update(dt):
         if rotation_z > 360:
             rotation_z = 0.0
 
+    if keys['up']:
+        translation_y -= 10.0 * dt
+    if keys['down']:
+        translation_y += 10.0 * dt
+    if keys['right']:
+        translation_x -= 10.0 * dt
+    if keys['left']:
+        translation_x += 10.0 * dt
+
+
     if keys['h']:
         if not window_help.visible:
             window_help.set_visible()
+
+    if keys['r']:
+        print("reset button is pressed")
+        rotation_x, rotation_y, rotation_z = 0, 0, 0
 
     # if not keys['x']:
     #     rotation_x = 0
