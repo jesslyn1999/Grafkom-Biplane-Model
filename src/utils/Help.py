@@ -3,7 +3,7 @@
 
 
 import pyglet
-from colors import *
+from utils.colors import *
 import os
 
 
@@ -11,12 +11,14 @@ class Help():
     '''
     Displays the help documentation.
     '''
-    def __init__(self):
+    def __init__(self, window_width, window_height):
+        self.window_height = window_height
+        self.window_width = window_width
         '''Help screen initializer'''
         # Load the help document.
         self.doc = pyglet.text.load(os.path.join(os.getcwd(), "src/utils/Help.html"))
         self.help_label = pyglet.text.DocumentLabel(self.doc,
-                y=(WINDOW_HEIGHT - 80), x=100, width=600, multiline=True)
+                y=(self.window_height - 80), x=100, width=600, multiline=True)
 
         # Make the button list.
         self.button_list = []
@@ -56,14 +58,14 @@ class Help():
         '''
         Define what the background will look like.
         '''
-        horizon = int(round(WINDOW_HEIGHT * 0.8))
+        horizon = int(round(self.window_height * 0.8))
 
         # Draw the sea.
         pyglet.graphics.draw(4, pyglet.gl.GL_QUADS,
                              ('v2i', (
                                  0, 0,
-                                 WINDOW_WIDTH, 0,
-                                 WINDOW_WIDTH, WINDOW_HEIGHT,
+                                 self.window_width, 0,
+                                 self.window_width, self.window_height,
                                  0, horizon)),
                              ('c4B', (LIGHT_BLUE + LIGHT_BLUE + WHITE + WHITE))
                              )
@@ -72,9 +74,9 @@ class Help():
         pyglet.graphics.draw(4, pyglet.gl.GL_QUADS,
             ('v2i', (
                 0, horizon,
-                WINDOW_WIDTH, horizon,
-                WINDOW_WIDTH, WINDOW_HEIGHT,
-                0, WINDOW_HEIGHT)),
+                self.window_width, horizon,
+                self.window_width, self.window_height,
+                0, self.window_height)),
             ('c4B', (WHITE + WHITE + LIGHT_BLUE + LIGHT_BLUE))
             )
 
@@ -84,13 +86,11 @@ class Help():
 def main():
     ''' Main method '''
     # Create the window manager.
-    global WINDOW_WIDTH
     WINDOW_WIDTH = 800
-    global WINDOW_HEIGHT
     WINDOW_HEIGHT = 600
 
     window = pyglet.window.Window(WINDOW_WIDTH, WINDOW_HEIGHT,
-            caption='Submarine Game')
+            caption='Biplane model Help')
 
     # Show the help screen.
     help = Help()

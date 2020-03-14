@@ -69,7 +69,7 @@ def update():
             camera.set_position((0, 5, current_camera_z - zoom_speed))
             LSEngine.init_camera(camera.get_position(), camera.get_rotation())
 
-    if Input.is_key_down(Key.key_I): # Key I = Zoom In
+    if Input.is_key_down(Key.key_l): # Key I = Zoom In
         current_camera_z = camera.get_position()[2]
         if(current_camera_z >= 30):
             camera.set_position((0, 5, current_camera_z - zoom_speed))
