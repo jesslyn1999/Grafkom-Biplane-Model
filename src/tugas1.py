@@ -5,11 +5,23 @@ import ctypes
 import pyglet
 from pyglet.gl import *
 
-window = pyglet.window.Window(resizable=True)
+window_main = pyglet.window.Window(resizable=True)
+window_help = pyglet.window.Window(resizable=True)
 
-@window.event
+@window_help.event
+def on_draw():
+    window_help.clear()
+    label = pyglet.text.Label('Hello, world',
+                              font_name='Times New Roman',
+                              font_size=36,
+                              x=window_help.width // 2, y=window_help.height // 2,
+                              anchor_x='center', anchor_y='center')
+
+    label.draw()
+
+@window_main.event
 def on_resize(width, height):
-    viewport_width, viewport_height = window.get_framebuffer_size()
+    viewport_width, viewport_height = window_main.get_framebuffer_size()
     glViewport(0, 0, viewport_width, viewport_height)
 
     glMatrixMode(GL_PROJECTION)
@@ -18,22 +30,22 @@ def on_resize(width, height):
     glMatrixMode(GL_MODELVIEW)
     return True
 
-@window.event
+@window_main.event
 def on_draw():
-    window.clear()
+    window_main.clear()
     glLoadIdentity()
 
     glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1.0, 1.0, 0.0))
     glEnable(GL_LIGHT0)
 
-    glTranslated(0.0, 0.0, -100.0)
+    glTranslated(0.0, 0.0, -20.0)
     glRotatef(rotation, 0.0, 1.0, 0.0)
     glRotatef(-25.0, 1.0, 0.0, 0.0)
     glRotatef(45.0, 0.0, 0.0, 1.0)
 
     glEnable(GL_LIGHTING)
-
     visualization.draw(meshes)
+
 
 def update(dt):
     global rotation
@@ -41,9 +53,11 @@ def update(dt):
 
     if rotation > 720.0:
         rotation = 0.0
+    pass
+
 
 if __name__ == "__main__":
-    file_abspath = os.path.join(os.getcwd(), "data/biplane.obj")
+    file_abspath = os.path.join(os.getcwd(), "data/biplane_1.obj")
     print("FILE : ", file_abspath)
 
     # # Iterate vertex data collected in each material
