@@ -5,6 +5,9 @@ import ctypes
 from pyglet.gl import *
 from utils.Help import Help
 from pyglet.window import key
+import math
+
+#Define variables 
 
 WINDOW_HELP_WIDTH = 800
 WINDOW_HELP_HEIGHT = 600
@@ -30,6 +33,10 @@ keys = {
 
 rotation_x, rotation_y, rotation_z = 0, 0, 0
 radius = -20
+camera_x, camera_y, camera_z = 0, 0, radius
+current_camera_rotation = 0
+
+# Define functions and main methods
 
 @window_main.event
 def on_resize(width, height):
@@ -88,7 +95,7 @@ def on_draw():
     # glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1.0, 1.0, 0.0))
     # glEnable(GL_LIGHT0)
 
-    gluLookAt(0,0,radius,0,0,0,0,1,0)
+    gluLookAt(camera_x, camera_y, camera_z, 0, 0, 0, 0, 1, 0)
 
     glTranslated(0.0, 0.0, 0.0)
     glRotatef(rotation_x, 1.0, 0.0, 0.0)
@@ -101,53 +108,55 @@ def on_draw():
 
 def update(dt):
     global rotation_x, rotation_y, rotation_z
-    global radius
+    global current_camera_rotation, radius, camera_x, camera_z
 
-    if keys['x']:
+    if keys['x']: # Key x = rotate on x axis
         rotation_x += 90.0 * dt
 
         if rotation_x > 360:
             rotation_x = 0.0
 
-    if keys['y']:
+    if keys['y']: # Key y = rotate on y axis
         rotation_y += 90.0 * dt
 
         if rotation_y > 360:
             rotation_y = 0.0
 
-    if keys['z']:
+    if keys['z']: # Key z = rotate on z axis
         rotation_z += 90.0 * dt
 
         if rotation_z > 360:
             rotation_z = 0.0
 
-    if keys['h']:
+    if keys['h']: # Key h = show help
         if not window_help.visible:
             window_help.set_visible()
 
-    if keys['i']:
-        radius += 1
+    if keys['i']: # Key i = zoom in
+        if radius > -10:
+            radius += 1
+            camera_z += 1
     
-    if keys['o']:
-        radius -= 1
+    if keys['o']: # Key o = zoom out
+        if radius < 50:
+            radius -= 1
+            camera_z -= 1
 
-    # if Input.is_key_down(Key.key_left): # Key left = Rotate camera to the left in a circle
-    #     #operate on the angle, get new position
-    #     current_camera_rotation -= camera_rotation_speed
-    #     new_camera_x = radius * math.sin(current_camera_rotation)
-    #     new_camera_z = radius * math.cos(current_camera_rotation)
+    if keys['left']: # Key left = Rotate camera to the left in a circle
+        #operate on the angle, get new position
+        current_camera_rotation -= 2 * dt
+        camera_x = radius * math.sin(current_camera_rotation)
+        camera_z = radius * math.cos(current_camera_rotation)
 
-    #     #set modified position
-    #     LSEngine.camera.set_position((new_camera_x, 5, new_camera_z))
+        
 
-    # if Input.is_key_down(Key.key_right): # Key left = Rotate camera to the right in a circle
-    #     #operate on the angle, get new position
-    #     current_camera_rotation += camera_rotation_speed
-    #     new_camera_x = radius * math.sin(current_camera_rotation)
-    #     new_camera_z = radius * math.cos(current_camera_rotation)
+    if keys['right']: # Key right = Rotate camera to the right in a circle
+        #operate on the angle, get new position
+        current_camera_rotation += 2 * dt
+        camera_x = radius * math.sin(current_camera_rotation)
+        camera_z = radius * math.cos(current_camera_rotation)
 
-    #     #set modified position
-    #     LSEngine.camera.set_position((new_camera_x, 5, new_camera_z))
+        
 
     # if not keys['x']:
     #     rotation_x = 0
@@ -157,6 +166,8 @@ def update(dt):
 
     # if not keys['z']:
     #     rotation_z = 0
+
+    print(current_camera_rotation, camera_x, camera_z)
 
 if __name__ == "__main__":
     file_abspath = os.path.join(os.getcwd(), "data/biplane_1.obj")
