@@ -32,6 +32,9 @@ keys = {
     'home':False,
     'i':False,
     'o':False,
+    'shift':False,
+    'j':False,
+    'l':False,
 }
 
 rotation_x, rotation_y, rotation_z = 0, 0, 0
@@ -67,18 +70,22 @@ def on_key_press(symbol, modifiers):
         keys['r'] = True
     if symbol == key.UP:  # translate up camera
         keys['up'] = True
-    if symbol == key.RIGHT:  # translate right camera
+    if symbol == key.RIGHT:  # Rotate camera to the right in a circle
         keys['right'] = True
     if symbol == key.DOWN:  # translate down camera
         keys['down'] = True
-    if symbol == key.LEFT:  # translate left camera
+    if symbol == key.LEFT: # Rotate camera to the left in a circle
         keys['left'] = True
     if symbol == key.I: # zoom-in the model
         keys['i'] = True 
     if symbol == key.O:  # zoom-out the model
         keys['o'] = True
-    if symbol == key.SHIFT:  # alternate key
+    if symbol == key.LSHIFT:  # alternate key
         keys['shift'] = True
+    if symbol == key.J: # translate left camera
+        keys['j'] = True 
+    if symbol == key.L: # translate right camera
+        keys['l'] = True 
 
 @window_main.event
 def on_key_release(symbol, modifiers):
@@ -98,14 +105,18 @@ def on_key_release(symbol, modifiers):
         keys['r'] = False
     if symbol == key.UP:  # translate up camera
         keys['up'] = False
-    if symbol == key.RIGHT:  # translate right camera
+    if symbol == key.RIGHT:  # Rotate camera to the right in a circle
         keys['right'] = False
     if symbol == key.DOWN:  # translate down camera
         keys['down'] = False
-    if symbol == key.LEFT:  # translate left camera
+    if symbol == key.LEFT:  # Rotate camera to the left in a circle
         keys['left'] = False
-    if symbol == key.SHIFT:  # alternate key
-        keys['shift'] = True
+    if symbol == key.LSHIFT:  # alternate key
+        keys['shift'] = False
+    if symbol == key.J: # translate left camera
+        keys['j'] = False 
+    if symbol == key.L: # translate right camera
+        keys['l'] = False 
 
 @window_main.event
 def on_draw():
@@ -169,10 +180,12 @@ def update(dt):
     if keys['down']: #translate model on -y
         translation_y += 10.0 * dt
 
-    if keys['right'] & keys['shift']: #translate model on x 
+    # if keys['right'] & keys['shift']: #translate model on x 
+    if keys['l']:
         translation_x -= 10.0 * dt
 
-    if keys['left'] & keys['shift']: #translate model on -x 
+    # if keys['left'] & keys['shift']: #translate model on -x 
+    if keys['j']:
         translation_x += 10.0 * dt
         
 
@@ -205,7 +218,7 @@ def update(dt):
     # if not keys['z']:
     #     rotation_z = 0
 
-    print(current_camera_rotation, camera_x, camera_z)
+    # print(current_camera_rotation, camera_x, camera_z)
 
 if __name__ == "__main__":
     file_abspath = os.path.join(os.getcwd(), "data/biplane_1.obj")
