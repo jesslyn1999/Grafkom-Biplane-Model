@@ -13,19 +13,22 @@ WINDOW_HELP_WIDTH = 800
 WINDOW_HELP_HEIGHT = 600
 window_main = pyglet.window.Window(resizable=True)
 window_help = pyglet.window.Window(WINDOW_HELP_WIDTH, WINDOW_HELP_HEIGHT,
-                                  caption='Biplane model Help', visible=False)
+                                  caption='Biplane model Help', visible=True)
 lightfv = ctypes.c_float * 4
 rotation = 0
 meshes = ""
 
 keys = {
-    'left':False,
-    'right':False,
     'x': False,
     'y':False,
     'z':False,
-    'ctrl':False,
+    'shift':False,
     'h':False,
+    'r': False,
+    'up': False,
+    'right': False,
+    'down': False,
+    'left': False,
     'home':False,
     'i':False,
     'o':False,
@@ -37,6 +40,7 @@ camera_x, camera_y, camera_z = 0, 0, radius
 current_camera_rotation = 0
 
 # Define functions and main methods
+translation_x, translation_y, translation_z = 0, 0, 0
 
 @window_main.event
 def on_resize(width, height):
@@ -51,41 +55,57 @@ def on_resize(width, height):
 
 @window_main.event
 def on_key_press(symbol, modifiers):
-    if symbol == key.LEFT:
-        keys['left'] = True
-    if symbol == key.RIGHT:
-        keys['right'] = True
-    if symbol == key.X:
+    if symbol == key.X: # rotate on x axis
         keys['x'] = True
-    if symbol == key.Y:
+    if symbol == key.Y: # rotate on y axis
         keys['y'] = True
-    if symbol == key.Z:
+    if symbol == key.Z: # rotate on z axis
         keys['z'] = True
-    if symbol == key.H:
+    if symbol == key.H:  # display help window
         keys['h'] = True
-    if symbol == key.I:
-        keys['i'] = True
-    if symbol == key.O:
+    if symbol == key.R:  # reset model position
+        keys['r'] = True
+    if symbol == key.UP:  # translate up camera
+        keys['up'] = True
+    if symbol == key.RIGHT:  # translate right camera
+        keys['right'] = True
+    if symbol == key.DOWN:  # translate down camera
+        keys['down'] = True
+    if symbol == key.LEFT:  # translate left camera
+        keys['left'] = True
+    if symbol == key.I: # zoom-in the model
+        keys['i'] = True 
+    if symbol == key.O:  # zoom-out the model
         keys['o'] = True
+    if symbol == key.SHIFT:  # alternate key
+        keys['shift'] = True
 
 @window_main.event
 def on_key_release(symbol, modifiers):
-    if symbol == key.LEFT:
-        keys['left'] = False
-    if symbol == key.RIGHT:
-        keys['right'] = False
-    if symbol == key.X:
-        keys['x'] = False
-    if symbol == key.Y:
+    if symbol == key.X: # rotate on x axis
+        keys['x'] = False 
+    if symbol == key.Y: # rotate on y axis
         keys['y'] = False
-    if symbol == key.Z:
+    if symbol == key.Z: # rotate on z axis
         keys['z'] = False
-    if symbol == key.H:
+    if symbol == key.H:  # display help window
         keys['h'] = False
-    if symbol == key.I:
-        keys['i'] = False
-    if symbol == key.O:
+    if symbol == key.I: # zoom-in the model
+        keys['i'] = False 
+    if symbol == key.O: # zoom-out the model
         keys['o'] = False
+    if symbol == key.R:  # reset model position
+        keys['r'] = False
+    if symbol == key.UP:  # translate up camera
+        keys['up'] = False
+    if symbol == key.RIGHT:  # translate right camera
+        keys['right'] = False
+    if symbol == key.DOWN:  # translate down camera
+        keys['down'] = False
+    if symbol == key.LEFT:  # translate left camera
+        keys['left'] = False
+    if symbol == key.SHIFT:  # alternate key
+        keys['shift'] = True
 
 @window_main.event
 def on_draw():
@@ -97,7 +117,7 @@ def on_draw():
 
     gluLookAt(camera_x, camera_y, camera_z, 0, 0, 0, 0, 1, 0)
 
-    glTranslated(0.0, 0.0, 0.0)
+    glTranslated(translation_x, translation_y, translation_z)
     glRotatef(rotation_x, 1.0, 0.0, 0.0)
     glRotatef(rotation_y, 0.0, 1.0, 0.0)
     glRotatef(rotation_z, 0.0, 0.0, 1.0)
@@ -109,6 +129,7 @@ def on_draw():
 def update(dt):
     global rotation_x, rotation_y, rotation_z
     global current_camera_rotation, radius, camera_x, camera_z
+    global translation_x, translation_y, translation_z
 
     if keys['x']: # Key x = rotate on x axis
         rotation_x += 90.0 * dt
@@ -133,14 +154,27 @@ def update(dt):
             window_help.set_visible()
 
     if keys['i']: # Key i = zoom in
-        if radius > -10:
+        if camera_z < -10:
             radius += 1
             camera_z += 1
     
     if keys['o']: # Key o = zoom out
-        if radius < 50:
+        if camera_z > -50:
             radius -= 1
             camera_z -= 1
+
+    if keys['up']: #translate model on y 
+        translation_y -= 10.0 * dt
+
+    if keys['down']: #translate model on -y
+        translation_y += 10.0 * dt
+
+    if keys['right'] & keys['shift']: #translate model on x 
+        translation_x -= 10.0 * dt
+
+    if keys['left'] & keys['shift']: #translate model on -x 
+        translation_x += 10.0 * dt
+        
 
     if keys['left']: # Key left = Rotate camera to the left in a circle
         #operate on the angle, get new position
@@ -148,7 +182,6 @@ def update(dt):
         camera_x = radius * math.sin(current_camera_rotation)
         camera_z = radius * math.cos(current_camera_rotation)
 
-        
 
     if keys['right']: # Key right = Rotate camera to the right in a circle
         #operate on the angle, get new position
@@ -156,7 +189,12 @@ def update(dt):
         camera_x = radius * math.sin(current_camera_rotation)
         camera_z = radius * math.cos(current_camera_rotation)
 
-        
+
+    if keys['r']:
+        print("reset button is pressed")
+        rotation_x, rotation_y, rotation_z = 0, 0, 0
+        radius = -20
+        camera_x, camera_y, camera_z = 0, 0, -20
 
     # if not keys['x']:
     #     rotation_x = 0
@@ -172,19 +210,6 @@ def update(dt):
 if __name__ == "__main__":
     file_abspath = os.path.join(os.getcwd(), "data/biplane_1.obj")
     print("FILE : ", file_abspath)
-
-
-    # # Iterate vertex data collected in each material
-    # for name, material in scene.materials.items():
-    #     material.vertex_format
-    #     # Contains the vertex list of floats in the format described above
-    #     material.vertices
-    #     # Material properties
-    #     material.diffuse
-    #     material.ambient
-    #     material.texture
-    #
-    # visualization.draw(scene)
 
     help = Help(WINDOW_HELP_WIDTH, WINDOW_HELP_HEIGHT)
     help.show(window_help)
