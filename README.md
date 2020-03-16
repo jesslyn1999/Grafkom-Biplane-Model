@@ -1,6 +1,6 @@
 # airplane-modelling
 
-Running Instructions
+## Running Instructions 
 Pastikan semua dependency telah diinstall
 
     PyOpenGL==3.1.5
