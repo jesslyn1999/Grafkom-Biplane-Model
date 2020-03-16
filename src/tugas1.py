@@ -10,7 +10,7 @@ import math
 #Define variables 
 
 WINDOW_HELP_WIDTH = 800
-WINDOW_HELP_HEIGHT = 600
+WINDOW_HELP_HEIGHT = 675
 window_main = pyglet.window.Window(resizable=True)
 window_help = pyglet.window.Window(WINDOW_HELP_WIDTH, WINDOW_HELP_HEIGHT,
                                   caption='Biplane model Help', visible=True)
@@ -188,7 +188,6 @@ def update(dt):
     if keys['j']:
         translation_x += 10.0 * dt
         
-
     if keys['left']: # Key left = Rotate camera to the left in a circle
         #operate on the angle, get new position
         current_camera_rotation -= 2 * dt
@@ -201,7 +200,6 @@ def update(dt):
         current_camera_rotation += 2 * dt
         camera_x = radius * math.sin(current_camera_rotation)
         camera_z = radius * math.cos(current_camera_rotation)
-
 
     if keys['r']:
         print("reset button is pressed")
