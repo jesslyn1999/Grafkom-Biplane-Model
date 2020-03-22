@@ -35,12 +35,15 @@ keys = {
     'shift':False,
     'j':False,
     'l':False,
+    'c':False
 }
 
 rotation_x, rotation_y, rotation_z = 0, 0, 0
 radius = -20
 camera_x, camera_y, camera_z = 0, 0, radius
+camera_direction_x, camera_direction_y, camera_direction_z = 0, 0, 0
 current_camera_rotation = 0
+current_camera_direction_rotation = 135
 
 # Define functions and main methods
 translation_x, translation_y, translation_z = 0, 0, 0
@@ -86,6 +89,8 @@ def on_key_press(symbol, modifiers):
         keys['j'] = True 
     if symbol == key.L: # translate right camera
         keys['l'] = True 
+    if symbol == key.C: # translate right camera
+        keys['c'] = True 
 
 @window_main.event
 def on_key_release(symbol, modifiers):
@@ -117,6 +122,8 @@ def on_key_release(symbol, modifiers):
         keys['j'] = False 
     if symbol == key.L: # translate right camera
         keys['l'] = False 
+    if symbol == key.C: # translate right camera
+        keys['c'] = False
 
 @window_main.event
 def on_draw():
@@ -126,7 +133,7 @@ def on_draw():
     # glLightfv(GL_LIGHT0, GL_POSITION, lightfv(-1.0, 1.0, 1.0, 0.0))
     # glEnable(GL_LIGHT0)
 
-    gluLookAt(camera_x, camera_y, camera_z, 0, 0, 0, 0, 1, 0)
+    gluLookAt(camera_x, camera_y, camera_z, camera_direction_x, camera_direction_y, camera_direction_z, 0, 1, 0)
 
     glTranslated(translation_x, translation_y, translation_z)
     glRotatef(rotation_x, 1.0, 0.0, 0.0)
@@ -141,6 +148,7 @@ def update(dt):
     global rotation_x, rotation_y, rotation_z
     global current_camera_rotation, radius, camera_x, camera_z
     global translation_x, translation_y, translation_z
+    global current_camera_direction_rotation, camera_direction_x, camera_direction_y, camera_direction_z
 
     if keys['x']: # Key x = rotate on x axis
         rotation_x += 90.0 * dt
@@ -201,11 +209,18 @@ def update(dt):
         camera_x = radius * math.sin(current_camera_rotation)
         camera_z = radius * math.cos(current_camera_rotation)
 
+    if keys['c']: # Key right = Rotate camera to the right in a circle
+        #operate on the angle, get new position
+        current_camera_direction_rotation += 2 * dt
+        camera_direction_x = radius * math.sin(current_camera_direction_rotation)
+        camera_direction_z = radius * math.cos(current_camera_direction_rotation)
+
     if keys['r']:
         print("reset button is pressed")
         rotation_x, rotation_y, rotation_z = 0, 0, 0
         radius = -20
         camera_x, camera_y, camera_z = 0, 0, -20
+        camera_direction_x, camera_direction_y, camera_direction_z = 0, 0, 0
 
     # if not keys['x']:
     #     rotation_x = 0
